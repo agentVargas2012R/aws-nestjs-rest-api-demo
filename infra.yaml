@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Instruments the infrastructure for the intl-iapps
+
+Parameters:
+  deployEnv:
+    Type: String
+    Default: "dev"
+  nameSpace:
+    Type: String
+    Default: "intllpnt-iapps-dev"
+
+Resources:
+  IntlAppsSNS:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "IntlAppsSNS.fifo"
+      FifoTopic: true
+      Subscription:
+        - Endpoint:
+            Fn::GetAtt:
+              - "IntlAppsQueue"
+              - "Arn"
+          Protocol: "sqs"
+
+  IntlAppsKms:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: "The KMS key for iApps"
+      Enabled: true
+      KeySpec: "SYMMETRIC_DEFAULT"
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/intllpnt-role"
+            Action: 'kms:*'
+            Resource: "*"
+
+  IntlAppsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: IntlAppsQueue.fifo
+      ReceiveMessageWaitTimeSeconds: 10
+      VisibilityTimeout: 10
+      FifoQueue: true
+      KmsMasterKeyId: !Ref IntlAppsKms
+
+  IntlAppsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "pk"
+          AttributeType: "S"
+        - AttributeName: "sk"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "pk"
+          KeyType: "HASH"
+        - AttributeName: "sk"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+      TableName: "IntlIAppsTable"
+
+Outputs:
+  intlAppsTopic:
+    Description: "The SNS Topic for Internal Apps"
+    Value: !Ref IntlAppsSNS
+    Export:
+      Name: !Sub "${AWS::StackName}-sns"
+  intlAppsQueueUrl:
+    Description: "The SQS for InternalApps"
+    Value: !Ref IntlAppsQueue
+    Export:
+      Name: !Sub "${AWS::StackName}-sqs"
+  intlAppsQueueArn:
+    Description: "The SQS Arn"
+    Value: !GetAtt IntlAppsQueue.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-url"
+  intlAppsTable:
+    Description: "The TableName"
+    Value: !GetAtt IntlAppsTable.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-table"
+  intlAppsKey:
+    Description: "The KMS key for encryptions or decryptions"
+    Value: !Ref IntlAppsKms
+    Export:
+      Name: !Sub "${AWS::StackName}-kms"
