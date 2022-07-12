@@ -1,0 +1,2 @@
+cd ../
+sam deploy --template-file ../infra.yaml --stack-name=intllpnt-iapps-dev-infra --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-keboggyh76p6 --capabilities CAPABILITY_NAMED_IAM --tags Application="Internal Apps Infrastructure" Environment="dev" buildInfo=`date +%s` --region us-east-1 --no-fail-on-empty-changeset --parameter-overrides deployEnv=dev
