@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Serverless Jobs API Micro-Service
+
+Parameters:
+  deployEnv:
+    Type: String
+    Default: "dev"
+  nameSpace:
+    Type: String
+    Default: "intllpnt-iapps-dev"
+
+Resources:
+  JobApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-api"
+      EndpointConfiguration: REGIONAL
+      StageName: !Ref deployEnv
+      Cors:
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,id_token'"
+        AllowOrigin: "'*'"
+        AllowMethods: "'*'"
+
+  JobFunc:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-job-lambda"
+      CodeUri: lambda-handler/dist/
+      Handler: index.handler
+      Runtime: nodejs14.x
+      AutoPublishAlias: live
+      Timeout: 10
+      MemorySize: 256
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt JobFuncRole.Arn
+      Environment:
+        Variables:
+          deployEnv: !Ref deployEnv
+      Events:
+        get:
+          Type: Api
+          Properties:
+            Path: /jobs
+            Method: GET
+            RestApiId: !Ref JobApi
+        post:
+          Type: Api
+          Properties:
+            Path: /jobs
+            Method: POST
+            RestApiId: !Ref JobApi
+        put:
+          Type: Api
+          Properties:
+            Path: /jobs/{id}
+            Method: PUT
+            RestApiId: !Ref JobApi
+        delete:
+          Type: Api
+          Properties:
+            Path: /jobs/{id}
+            Method: DELETE
+            RestApiId: !Ref JobApi
+
+  JobFuncRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: LogsPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: arn:aws:logs:*:*:*
+
+Outputs:
+  jobApiId:
+    Description: "Job Endpoint ID"
+    Value: !Ref JobApi
+    Export:
+      Name: !Sub ${AWS::StackName}-rest-api-id
+  jobApiUrl:
+    Description: "Job Endpoint URL"
+    Value: !Sub "https://${JobApi}.execute-api.${AWS::Region}.amazonaws.com/Stage"
+    Export:
+      Name: !Sub ${AWS::StackName}-rest-api-url

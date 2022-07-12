@@ -1,0 +1,1 @@
+sam validate -t ../template.yaml
