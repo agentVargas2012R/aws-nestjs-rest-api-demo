@@ -16,21 +16,21 @@ export class JobsController {
     }
 
     @Get()
-    @ApiOperation({ summary: 'Get a list of all current available positions.', })
+    @ApiOperation({ summary: 'Get a list of all current available positions that match a job title description.', })
     @ApiResponse({ status: 200, description: 'The foound record', type: Job })
     public getJobsByTitle(@Param() title: string): Promise<Job[]>{
         return this.jobsService.getJobsByTitle(title);
     }
 
     @Post()
-    @ApiOperation({ 'summary': 'Post a new available positions.'})
+    @ApiOperation({ 'summary': 'Post a new available position.'})
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     public postJob(@Body()job: Job): Promise<Job> {
         return this.jobsService.postJob(job);
     }
 
     @Put(':id')
-    @ApiOperation({ 'summary': 'Update an existing positions.'})
+    @ApiOperation({ 'summary': 'Update an existing position.'})
     @ApiResponse({ status: 200, description: 'The record has been updated.'})
     public async putJob(@Body() job: Job): Promise<JobApiResponse> {
         this.jobsService.putJob(job);
@@ -42,7 +42,7 @@ export class JobsController {
     }
 
     @Delete(':id/:company/:postedDate')
-    @ApiOperation({ 'summary': 'Close an available positions.'})
+    @ApiOperation({ 'summary': 'Close an available position.'})
     @ApiResponse({ status: 200, description: 'Record successfully deleted.'})
     public async deleteJob(@Param() param: JobApiRequest): Promise<JobApiResponse> {
         this.jobsService.deleteJob(param.id, param.company, param.postedDate);
