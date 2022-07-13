@@ -4,10 +4,11 @@ import { NestFactory } from '@nestjs/core';
 import { Express } from 'express';
 import { Server } from 'http';
 import { Context } from 'aws-lambda';
-import { createServer, proxy, Response }  from 'aws-serverless-express';
+import * as awsServerlessExpress  from 'aws-serverless-express';
 import * as express from 'express';
 import { AppModule } from "./app.module";
 import {configureOpenSpec} from "./main";
+import helmet from 'helmet';
 
 let cachedServer: Server;
 
@@ -16,6 +17,10 @@ async function createExpressApp (expressApp: Express): Promise<INestApplication>
         AppModule,
         new ExpressAdapter(expressApp)
     )
+
+    app.use(helmet({
+         contentSecurityPolicy: false,
+    }));
     return app;
 }
 
@@ -24,11 +29,10 @@ async function bootstrapLambda(){
     const app = await createExpressApp(expressApp);
     configureOpenSpec(app);
     await app.init();
-
-    return createServer(expressApp);
+    return awsServerlessExpress.createServer(expressApp);
 }
 
-export async function handler(event:any, context: Context): Promise<Response> {
+export async function handler(event:any, context: Context): Promise<awsServerlessExpress.Response> {
 
     if( !cachedServer ) {
         const server = await bootstrapLambda();
@@ -40,5 +44,5 @@ export async function handler(event:any, context: Context): Promise<Response> {
     console.log("Context:");
     console.log(context);
 
-    return proxy(cachedServer, event, context, 'PROMISE').promise;
+    return awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE').promise;
 }

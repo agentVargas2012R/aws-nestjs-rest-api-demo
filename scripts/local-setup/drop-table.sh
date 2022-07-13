@@ -1,1 +1,1 @@
-aws dynamodb delete-table --table-name IntlIAppsTable --endpoint-url http://localhost:8000
+aws dynamodb delete-table --table-name intllpnt-iapps-dev-infra-table --endpoint-url http://localhost:8000

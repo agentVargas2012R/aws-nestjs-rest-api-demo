@@ -5,12 +5,16 @@ import { v4 as uuidv4 } from 'uuid';
 import * as AWS from 'aws-sdk'
 import {AppUtil} from '../common/app-util';
 import {DBUtil} from '../common/db-util';
+import {SQSUtil} from '../common/sqs-util';
+import {SNSUtil} from '../common/sns-util';
 
 @Injectable()
 export class JobsService {
 
     private jobs: Job[] = JOBS;
     private dbUtil: DBUtil;
+    private sqsUtil: SQSUtil;
+    private snsUtil: SNSUtil;
 
     constructor() {
         if(process.env.local) console.log("\nBootstrapping Local DynamoDB Endpoint\n");
@@ -21,6 +25,8 @@ export class JobsService {
             })
             : new AWS.DynamoDB.DocumentClient();
         this.dbUtil = new DBUtil(dynamoDB);
+        this.sqsUtil = new SQSUtil();
+        this.snsUtil = new SNSUtil();
     }
 
     public async getJobs(): Promise<Job[]> {
@@ -58,15 +64,23 @@ export class JobsService {
         job.pk = AppUtil.getPK(job.name);
         let sk =  AppUtil.getSK(job);
         await this.dbUtil.put(job, sk);
+        await this.snsUtil.sendMessage(job);
         return job;
     }
 
     public async putJob(job: Job): Promise<void> {
        let sk = AppUtil.getSK(job);
        await this.dbUtil.put(job, sk);
+       await this.snsUtil.sendMessage(job);
     }
 
     public async deleteJob(pk: string, company: string, postedDate: string): Promise<void> {
         await this.dbUtil.delete(pk, company, postedDate);
+        await this.snsUtil.sendMessage({
+            pk,
+            company,
+            postedDate,
+            message: "Record has been deleted"
+        });
     }
 }

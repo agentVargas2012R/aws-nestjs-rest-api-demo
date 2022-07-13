@@ -38,12 +38,28 @@ Resources:
       Environment:
         Variables:
           deployEnv: !Ref deployEnv
+          tableName: !Sub "${infraStack}-table"
+          topicArn:
+            Fn::ImportValue:
+              !Sub "${infraStack}-sns"
       Events:
         info:
           Type: Api
           Properties:
             Path: /info
             Method: GET
+            RestApiId: !Ref JobApi
+        infoApi:
+          Type: Api
+          Properties:
+            Path: /info-json
+            Method: Get
+            RestApiId: !Ref JobApi
+        infoProxy:
+          Type: Api
+          Properties:
+            Path: /info/{proxy+}
+            Method: ANY
             RestApiId: !Ref JobApi
         get:
           Type: Api
@@ -86,19 +102,37 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
+        - PolicyName: SNSPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource:
+                  Fn::ImportValue:
+                    !Sub "${infraStack}-sns"
+        - PolicyName: KmsPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'kms:*'
+                Resource: '*'
         - PolicyName: DBAccessPolicy
           PolicyDocument:
             Statement:
               - Effect: Allow
                 Action:
                   - 'dynamodb:GetItem'
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:DeleteItem'
                   - 'dynamodb:Scan'
                   - 'dynamodb:Query'
                   - 'dynamodb:BatchGetItem'
                   - 'dynamodb:BatchWriteItem'
                 Resource:
                   - !Sub
-                    - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}
+                    - ${tableName}
                     - { tableName: { Fn::ImportValue: !Join [ "-", [ !Ref infraStack , "table" ] ] } }
         - PolicyName: LogsPolicy
           PolicyDocument:

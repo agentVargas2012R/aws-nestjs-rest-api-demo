@@ -1,1 +1,1 @@
-aws dynamodb scan --table-name IntlIAppsTable --endpoint-url http://localhost:8000
+aws dynamodb scan --table-name intllpnt-iapps-dev-infra-table --endpoint-url http://localhost:8000

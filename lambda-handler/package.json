@@ -29,6 +29,7 @@
     "aws-sdk": "^2.1173.0",
     "aws-serverless-express": "^3.4.0",
     "class-validator": "^0.13.2",
+    "helmet": "^5.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",

@@ -12,18 +12,6 @@ Parameters:
     Default: "intllpnt-iapps-dev"
 
 Resources:
-  IntlAppsSNS:
-    Type: AWS::SNS::Topic
-    Properties:
-      TopicName: "IntlAppsSNS.fifo"
-      FifoTopic: true
-      Subscription:
-        - Endpoint:
-            Fn::GetAtt:
-              - "IntlAppsQueue"
-              - "Arn"
-          Protocol: "sqs"
-
   IntlAppsKms:
     Type: AWS::KMS::Key
     Properties:
@@ -35,18 +23,55 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/intllpnt-role"
+              AWS: [
+                !Sub "arn:aws:iam::${AWS::AccountId}:root",
+                !Sub "arn:aws:iam::${AWS::AccountId}:role/intllpnt-role"
+              ]
             Action: 'kms:*'
             Resource: "*"
+
+  IntlAppsSNS:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${AWS::StackName}-sns"
+      Subscription:
+        - Endpoint: "agentVargas2012R@gmail.com"
+          Protocol: "email"
 
   IntlAppsQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: IntlAppsQueue.fifo
+      QueueName: !Sub "${AWS::StackName}-sqs"
       ReceiveMessageWaitTimeSeconds: 10
       VisibilityTimeout: 10
-      FifoQueue: true
       KmsMasterKeyId: !Ref IntlAppsKms
+
+  IntlAppsSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn:
+        !Ref IntlAppsSNS
+      Endpoint:
+        !GetAtt IntlAppsQueue.Arn
+      Protocol: sqs
+      FilterPolicy:
+        EventType:
+          - "intellipoint-iapps-message"
+
+  IntlAppsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref IntlAppsQueue
+      PolicyDocument:
+        Statement:
+          - Sid: Allow-SNS-SendMessage
+            Effect: "Allow"
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - sqs:*
+            Resource: !Ref IntlAppsSNS
 
   IntlAppsTable:
     Type: AWS::DynamoDB::Table
@@ -64,7 +89,7 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: "1"
         WriteCapacityUnits: "1"
-      TableName: "IntlIAppsTable"
+      TableName: !Sub "${AWS::StackName}-table"
 
 Outputs:
   intlAppsTopic:
