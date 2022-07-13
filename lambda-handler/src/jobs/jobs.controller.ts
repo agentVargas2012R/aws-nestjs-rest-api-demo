@@ -15,6 +15,12 @@ export class JobsController {
         return this.jobsService.getJobs();
     }
 
+    @Get()
+    @ApiOperation({ summary: 'Get a list of all current available positions.', })
+    @ApiResponse({ status: 200, description: 'The foound record', type: Job })
+    public getJobsByTitle(@Param() title: string): Promise<Job[]>{
+        return this.jobsService.getJobsByTitle(title);
+    }
 
     @Post()
     @ApiOperation({ 'summary': 'Post a new available positions.'})
@@ -35,11 +41,11 @@ export class JobsController {
 
     }
 
-    @Delete(':id')
+    @Delete(':id/:company/:postedDate')
     @ApiOperation({ 'summary': 'Close an available positions.'})
     @ApiResponse({ status: 200, description: 'Record successfully deleted.'})
     public async deleteJob(@Param() param: JobApiRequest): Promise<JobApiResponse> {
-        this.jobsService.deleteJob(param.id);
+        this.jobsService.deleteJob(param.id, param.company, param.postedDate);
         return {
             status: 200,
             description: 'Record ' + param.id + ' was successfully deleted.'

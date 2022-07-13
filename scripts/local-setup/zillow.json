@@ -1,0 +1,11 @@
+{
+  "pk": {"S": "senior_software_developer_engineer"},
+  "sk": {"S": "1657681260013#zillow"},
+  "name": {"S": "Senior Software Developer Engineer"},
+  "company": {"S": "Zillow"},
+  "geoLocation": {"S": "United States"},
+  "fullTime": {"S": "true"},
+  "description": {"S": "The zillow Group Engineering team is innovating on the next generation of real estate. We have the ability to transform the future of the industry with unmatched consume reach to over 200 million useres across our brands like Zillow, Trulia, and StreetEasy, and industry-leading platforms or employees and partners professionals who support our customers."},
+  "payRange": {"S": "$145,000 - $258,000"},
+  "postedDate": {"S":  "1657681260013"}
+}

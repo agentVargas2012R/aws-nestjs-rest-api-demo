@@ -1,0 +1,11 @@
+{
+  "pk": {"S": "senior_software_developer_engineer"},
+  "sk": {"S": "1657681260012#mvw"},
+  "name": {"S": "Senior Software Developer Engineer"},
+  "company": {"S": "Marriot Vacation Wordlwide"},
+  "geoLocation": {"S": "United States"},
+  "fullTime": {"S": "true"},
+  "description": {"S": "The MVW Engineering team is innovating on the next generation of real estate. We have the ability to transform the future of the industry with unmatched consume reach to over 200 million useres across our brands like Zillow, Trulia, and StreetEasy, and industry-leading platforms or employees and partners professionals who support our customers."},
+  "payRange": {"S": "$90,000 - $158,000"},
+  "postedDate": {"S":  "1657681260012"}
+}

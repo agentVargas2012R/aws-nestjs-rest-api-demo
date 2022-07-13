@@ -1,0 +1,1 @@
+aws dynamodb scan --table-name IntlIAppsTable --endpoint-url http://localhost:8000

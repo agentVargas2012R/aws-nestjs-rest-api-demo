@@ -1,0 +1,11 @@
+{
+  "pk": {"S": "senior_software_developer_engineer"},
+  "sk": {"S": "1657681260009#ets"},
+  "name": {"S": "Senior Software Developer Engineer"},
+  "company": {"S": "ETS"},
+  "geoLocation": {"S": "New Delhi"},
+  "fullTime": {"S": "true"},
+  "description": {"S": "The ets Group Engineering team is innovating on the next generation of real estate. We have the ability to transform the future of the industry with unmatched consume reach to over 200 million useres across our brands like Zillow, Trulia, and StreetEasy, and industry-leading platforms or employees and partners professionals who support our customers."},
+  "payRange": {"S": "$60,000 - $98,000"},
+  "postedDate": {"S":  "1657681260009"}
+}

@@ -39,6 +39,12 @@ Resources:
         Variables:
           deployEnv: !Ref deployEnv
       Events:
+        info:
+          Type: Api
+          Properties:
+            Path: /info
+            Method: GET
+            RestApiId: !Ref JobApi
         get:
           Type: Api
           Properties:
@@ -60,7 +66,7 @@ Resources:
         delete:
           Type: Api
           Properties:
-            Path: /jobs/{id}
+            Path: /jobs/{id}/{company}/{postedDate}
             Method: DELETE
             RestApiId: !Ref JobApi
 
