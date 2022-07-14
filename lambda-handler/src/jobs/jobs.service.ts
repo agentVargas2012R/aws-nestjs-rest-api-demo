@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Job } from './jobs';
 import { JOBS } from './jobs.mock';
 import { v4 as uuidv4 } from 'uuid';
-import {DynamoDBClient} from '@aws-sdk/client-dynamoDB';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
 import {AppUtil} from '../common/app-util';
 import {DBUtil} from '../common/db-util';
 import {SQSUtil} from '../common/sqs-util';
