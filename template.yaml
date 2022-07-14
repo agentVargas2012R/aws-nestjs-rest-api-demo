@@ -43,48 +43,42 @@ Resources:
             Fn::ImportValue:
               !Sub "${infraStack}-sns"
       Events:
-        info:
-          Type: Api
-          Properties:
-            Path: /info
-            Method: GET
-            RestApiId: !Ref JobApi
         infoApi:
           Type: Api
           Properties:
-            Path: /info-json
+            Path: /info/api-json
             Method: Get
             RestApiId: !Ref JobApi
-        infoProxy:
+        any:
           Type: Api
           Properties:
-            Path: /info/{proxy+}
+            Path: /{proxy+}
             Method: ANY
             RestApiId: !Ref JobApi
-        get:
-          Type: Api
-          Properties:
-            Path: /jobs
-            Method: GET
-            RestApiId: !Ref JobApi
-        post:
-          Type: Api
-          Properties:
-            Path: /jobs
-            Method: POST
-            RestApiId: !Ref JobApi
-        put:
-          Type: Api
-          Properties:
-            Path: /jobs/{id}
-            Method: PUT
-            RestApiId: !Ref JobApi
-        delete:
-          Type: Api
-          Properties:
-            Path: /jobs/{id}/{company}/{postedDate}
-            Method: DELETE
-            RestApiId: !Ref JobApi
+#        get:
+#          Type: Api
+#          Properties:
+#            Path: /jobs
+#            Method: GET
+#            RestApiId: !Ref JobApi
+#        post:
+#          Type: Api
+#          Properties:
+#            Path: /jobs
+#            Method: POST
+#            RestApiId: !Ref JobApi
+#        put:
+#          Type: Api
+#          Properties:
+#            Path: /jobs/{id}
+#            Method: PUT
+#            RestApiId: !Ref JobApi
+#        delete:
+#          Type: Api
+#          Properties:
+#            Path: /jobs/{id}/{company}/{postedDate}
+#            Method: DELETE
+#            RestApiId: !Ref JobApi
 
   JobFuncRole:
     Type: AWS::IAM::Role

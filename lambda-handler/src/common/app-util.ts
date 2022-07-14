@@ -1,12 +1,13 @@
 import {Job} from '../jobs/jobs';
+import {LogInvocation} from './log-decorator';
 
 export class AppUtil {
+
+    @LogInvocation
     public static getPK(key: string) {
-         console.log(key);
-         const result = key.toLowerCase().split(" ").join("_");
-         console.log(result);
-         return result;
+         return key.toLowerCase().split(" ").join("_");
     }
+    @LogInvocation
     public static getSK(job: Job) {
         return job.postedDate + "#" + job.company.toLowerCase();
     }

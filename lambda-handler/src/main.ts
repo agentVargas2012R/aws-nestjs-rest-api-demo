@@ -20,7 +20,7 @@ export async function configureOpenSpec(app: any){
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('info', app, document);
+    SwaggerModule.setup('api', app, document);
 }
 
 async function bootstrap() {
