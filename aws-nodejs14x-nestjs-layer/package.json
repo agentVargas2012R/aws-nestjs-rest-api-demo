@@ -1,0 +1,46 @@
+{
+  "name": "aws-nodejs14x-nestjs-layer",
+  "version": "0.0.1",
+  "description": "A NodeJS14.X NestJs Layer.",
+  "author": "Michael Vargas",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "npm install"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.128.0",
+    "@aws-sdk/client-sns": "^3.128.0",
+    "@aws-sdk/client-sqs": "^3.128.0",
+    "@nestjs/common": "^9.0.0",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/swagger": "^6.0.4",
+    "aws-lambda": "^1.0.7",
+    "aws-serverless-express": "^3.4.0",
+    "class-validator": "^0.13.2",
+    "helmet": "^5.1.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.2.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  },
+  "bundleDependencies": [
+    "@nestjs/common",
+    "@nestjs/core",
+    "@nestjs/platform-express",
+    "@nestjs/swagger",
+    "aws-lambda",
+    "aws-serverless-express",
+    "reflect-metadata",
+    "rimraf",
+    "rxjs",
+    "uuid",
+    "@aws-sdk/client-dynamodb",
+    "@aws-sdk/client-sns",
+    "@aws-sdk/client-sqs"
+  ]
+}

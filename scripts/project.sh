@@ -1,2 +1,2 @@
 cd ../lambda*
-npm run build
+npm run package
