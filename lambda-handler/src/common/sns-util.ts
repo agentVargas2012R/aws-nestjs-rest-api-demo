@@ -1,14 +1,13 @@
-import * as AWS from 'aws-sdk';
+import {SNSClient, PublishCommand, PublishCommandInput} from'@aws-sdk/client-sns';
 
 export class SNSUtil {
-    sns: AWS.SNS;
+    sns: SNSClient;
     constructor() {
-        AWS.config.update({region: "us-east-1"});
-        this.sns = new AWS.SNS({apiVersion: '2010-03-31'});
+        this.sns = new SNSClient({apiVersion: '2010-03-31'});
     }
 
     public async sendMessage(payload: any) {
-        const params = {
+        const params: PublishCommandInput = {
             TopicArn: process.env.topicArn,
             MessageAttributes: {
                 EventType: {
@@ -19,7 +18,12 @@ export class SNSUtil {
             Message: JSON.stringify(payload)
         }
 
-        const result = await this.sns.publish(params).promise();
+let command: any;
+try {command = new PublishCommand(params)} catch(err) {
+    console.log("Couldnt create publish command")
+}
+
+        const result = await this.sns.send(command);
         console.log(result);
     }
 }

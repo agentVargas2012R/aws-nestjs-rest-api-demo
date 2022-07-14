@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Job } from './jobs';
 import { JOBS } from './jobs.mock';
 import { v4 as uuidv4 } from 'uuid';
-import * as AWS from 'aws-sdk'
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
 import {AppUtil} from '../common/app-util';
 import {DBUtil} from '../common/db-util';
 import {SQSUtil} from '../common/sqs-util';
 import {SNSUtil} from '../common/sns-util';
+import {LogInvocation} from '../common/log-decorator';
 
 @Injectable()
 export class JobsService {
@@ -19,11 +20,11 @@ export class JobsService {
     constructor() {
         if(process.env.local) console.log("\nBootstrapping Local DynamoDB Endpoint\n");
         const dynamoDB = process.env.local ?
-            new AWS.DynamoDB.DocumentClient({
+            new DynamoDBClient({
                 region: "us-east-1",
                 endpoint: process.env.endpoint
             })
-            : new AWS.DynamoDB.DocumentClient();
+            : new DynamoDBClient({region: "us-east-1"});
         this.dbUtil = new DBUtil(dynamoDB);
         this.sqsUtil = new SQSUtil();
         this.snsUtil = new SNSUtil();
@@ -33,43 +34,47 @@ export class JobsService {
         const result = await this.dbUtil.scan();
         return result.map((job) => {
             return {
-                pk: job.pk,
-                name: job.name,
-                description: job.description,
-                company: job.company,
-                geoLocation: job.geoLocation,
-                payRange: job.payRange,
-                postedDate: job.postedDate
+                pk: job.pk.S,
+                sk: job.sk.S,
+                name: job.name.S,
+                description: job.description.S,
+                company: job.company.S,
+                fullTime: job.fullTime.S === "true",
+                geoLocation: job.geoLocation.S,
+                payRange: job.payRange.S,
+                postedDate: job.postedDate.S
             }
         }) as Job[];
     }
 
-    public async getJobsByTitle(title: string) {
-            const result = await this.dbUtil.query(title);
+    public async getJobsByTitle(title: string, time: string) {
+            const result = await this.dbUtil.query(title, time);
             return result.map((job) => {
                 return {
-                    pk: job.pk,
-                    name: job.name,
-                    description: job.description,
-                    company: job.company,
-                    geoLocation: job.geoLocation,
-                    payRange: job.payRange,
-                    postedDate: job.postedDate
+                    pk: job.pk.S,
+                    name: job.name.S,
+                    description: job.description.S,
+                    company: job.company.S,
+                    geoLocation: job.geoLocation.S,
+                    fullTime: job.fullTime.S === "true",
+                    payRange: job.payRange.S,
+                    postedDate: job.postedDate.S
                 }
             }) as Job[];
     }
 
     public async postJob(job: Job): Promise<Job> {
         job.postedDate = `${new Date().getTime()}`;
-        job.pk = AppUtil.getPK(job.name);
-        let sk =  AppUtil.getSK(job);
+        job.pk = await AppUtil.getPK(job.name);
+        let sk = await AppUtil.getSK(job);
         await this.dbUtil.put(job, sk);
         await this.snsUtil.sendMessage(job);
         return job;
     }
 
+    @LogInvocation
     public async putJob(job: Job): Promise<void> {
-       let sk = AppUtil.getSK(job);
+       let sk = await AppUtil.getSK(job);
        await this.dbUtil.put(job, sk);
        await this.snsUtil.sendMessage(job);
     }

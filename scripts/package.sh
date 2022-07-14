@@ -1,0 +1,1 @@
+sam package -t ./.aws-sam/build/template.yaml --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-keboggyh76p6

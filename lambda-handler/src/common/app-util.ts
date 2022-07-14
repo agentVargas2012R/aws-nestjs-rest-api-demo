@@ -4,12 +4,12 @@ import {LogInvocation} from './log-decorator';
 export class AppUtil {
 
     @LogInvocation
-    public static getPK(key: string) {
-         return key.toLowerCase().split(" ").join("_");
+    public static async getPK(key: string) {
+         return await key.toLowerCase().split(" ").join("_");
     }
     @LogInvocation
-    public static getSK(job: Job) {
-        return job.postedDate + "#" + job.company.toLowerCase();
+    public static async getSK(job: Job) {
+        return await job.postedDate + "#" + job.company.toLowerCase();
     }
     public static buildApiResponse(message: string){
         return {
