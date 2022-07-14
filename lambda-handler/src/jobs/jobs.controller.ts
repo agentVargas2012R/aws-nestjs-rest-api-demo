@@ -21,8 +21,8 @@ export class JobsController {
     @ApiOperation({ summary: 'Get a list of all current available positions that match a job title description.', })
     @ApiResponse({ status: 200, description: 'The foound record', type: Job })
     @LogInvocation
-    public async getJobsByTitle(@Param() title: string): Promise<Job[]>{
-        return await this.jobsService.getJobsByTitle(title);
+    public async getJobsByTitle(@Param() title: string, @Param() time: string): Promise<Job[]>{
+        return await this.jobsService.getJobsByTitle(title, time);
     }
 
     @Post()
