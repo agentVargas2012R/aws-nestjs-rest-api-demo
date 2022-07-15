@@ -7,7 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "npm install"
+    "build": "npm install",
+    "metrics": "npx cost-of-modeules"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.128.0",
@@ -26,6 +27,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
+    "cost-of-modules": "1.0.1",
     "rimraf": "3.0.2"
   },
   "bundleDependencies": [
