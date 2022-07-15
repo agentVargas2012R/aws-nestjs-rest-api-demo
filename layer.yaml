@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  A Nodejs14x NestJS Layer
+
+Resources:
+  AWSNodeJS14xNestJSLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: aws-nodejs14x-nestjs-layer
+      Description: Runtime for the nestjs node environments.
+      ContentUri: aws-nodejs14x-nestjs-layer/
+      CompatibleRuntimes:
+        - nodejs14.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
+Outputs:
+  layerArn:
+    Description: The Layer Arn to reference in the othe templates.
+    Value: !Ref AWSNodeJS14xNestJSLayer
+    Export:
+      Name: !Sub "${AWS::StackName}-layer"

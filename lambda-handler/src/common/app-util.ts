@@ -12,6 +12,7 @@ export class AppUtil {
         return await job.postedDate + "#" + job.company.toLowerCase();
     }
     public static buildApiResponse(message: string){
+        console.log("testing iterative");
         return {
             status: 200,
             description: message
