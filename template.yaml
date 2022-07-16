@@ -13,6 +13,12 @@ Parameters:
   layerVersion:
     Type: String
     Default: "1"
+  cognitoStack:
+    Type: String
+    Default: "intllpnt-iapps-dev-cognito"
+  userPoolId:
+    Type: String
+    Default: us-east-1_P5OaYSrXp
 
 Resources:
   JobApi:
@@ -25,6 +31,14 @@ Resources:
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,id_token'"
         AllowOrigin: "'*'"
         AllowMethods: "'*'"
+      Auth:
+        DefaultAuthorizer: #!Sub "${cognitoStack}-userpool-client"
+        Authorizers:
+          MyCognitoAuth:
+            UserPoolArn: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${userPoolId}"
+            Identity:
+              Header: Authorization
+
 
   JobFunc:
     Type: AWS::Serverless::Function
