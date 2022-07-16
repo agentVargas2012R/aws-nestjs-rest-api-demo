@@ -49,11 +49,6 @@ async function bootstrapLambda(){
 
 export async function handler(event:any, context: Context): Promise<awsServerlessExpress.Response> {
 
-//      console.log("Before: " + event.path);
-//      if(event.path === '/api') event.path = '/api/';
-//      event.path = event.path.includes('swagger-ui') ? `/api${event.path}` : event.path;
-//      console.log("After: " + event.path);
-
     if( !cachedServer ) {
         const server = await bootstrapLambda();
         cachedServer = server;
@@ -65,6 +60,9 @@ export async function handler(event:any, context: Context): Promise<awsServerles
     console.log("Context:");
     console.log(context);
 
-
-    return await awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE').promise;
+    try {
+        return await awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE').promise;
+    } catch(err) {
+        console.log(err);
+    }
 }
