@@ -227,7 +227,7 @@ that can scale infintely while having minimal downtime and be HA compliant.
 ## Serverless
 
 ### Highly Scalable, Available and Redundant
-With Minimal Administration, the was the intention of using serverless architecture. Namely, API Gateway, 
+With Minimal Administration, this is the intention of using serverless architecture. Namely, API Gateway, 
 Lambda, DynamoDB, SNS and SQS. Each of these are managed by AWS and can
 scale with little to no management. 
 
@@ -471,5 +471,38 @@ design pattern.
 Doing so decouples the microservices from one another. 
 Also, we can have multiple consumers receive the same event
 without changing code. They would simply subscribe to our topic.
+
+
+### API System
+
+This system is what has been discussed here. It is a REST API that
+interfaces with API Gateway, the aws lambda and the dynamoDB. 
+
+A request is made to the api gateway, the request is forwarded to the 
+lambda function, the lambda function interacts with the dynamoDB table 
+to fulfill the request and returns the data to the caller after transoforming
+the data from dynamoDB format. The application uses the content type json as its 
+method of exchange.
+
+### Event Handler
+
+This is the back-end system. It isn't accessible from the internet.
+Its responsibility is to load real-world data from external sites into the dynamodb table
+and capture the information available. This information is transformed
+and stored in a format that is presentable from the rest api. 
+
+
+#### Rant 
+If we wanted to create a data-lake, we would opt to store the raw data,
+as is, in S3. Overtime, we could use a similar access approach
+to query data, possibly with athena. All of this is possible, I just
+chose to build it in this way. 
+
+Cost, performance, etc...yes I hear what you are saying.
+
+# License
+
+This implementation is a reference app. Its sole purpose is to demo
+how you could go about doing so. Using this app costs millions of dollars!!
 
 
