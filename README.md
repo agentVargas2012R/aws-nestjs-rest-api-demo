@@ -147,7 +147,7 @@ with variables. For small systems, it may not be that big of a deal.
 
 However, the focus is to know what we are dealing with when looking
 at a thousand lines of code. We want to know that if we declare
-duck, it is really a duck and nothing something else that
+duck, it is really a duck and not something else that
 overwrote it only to find out that it's a giraffe.
 
 ### NestJS 
@@ -397,7 +397,7 @@ test cases.
 For my example, this can be found here:
 
 ```aidl
-lambda-hanlder
+lambda-handlßer
         |- src
             |- jobs
                 - jobs.controller.ts
@@ -432,13 +432,24 @@ lambda-hanlder
 
 # Business Function
 
-This is a job board powered by AWS. This application overall
-is to track job postings. In addition, the system
+I was talking to a close colleague of mine the other day, his name is
+Deepak. As I was attempting to use Google Assistant, it accidently 
+texted my other friend, who's name was also Deepak. I decided that
+given the name's popularity, that this application would be called Deepak
+in honor of them ;)
+
+That's how we devs roll, no meetings on names, no PMO or marketing team on 
+the name of the app...nah...the app is Deepak. 
+
+## Application: Deepak 
+
+Deepak is a job board powered by AWS. Deepak tracks job postings. In addition, the system
 notifies when new jobs become available. It interfaces
 with external sites and api's to data-mine the boards to discover what
-jobs are available. 
+jobs are available. Deepak never sleeps and he is always
+looking for a new opportunity.
 
-This is open to extension. It is very much a real system. 
+Deepak is open to extension. It is very much a real system. 
 You could easily create a workflow where we process data, 
 capture metrics based on our data and interface with third-party
 companies. ALl of this would be relatively simple.
@@ -446,11 +457,11 @@ companies. ALl of this would be relatively simple.
 # System Design
 
 The system architecture and design is exposed as the following two systems.
-The scope of this project is outlined in the red.
+The scope of this project as outlined in the red.
 
 [image-goes-here]
 
-As you might expect, this is a traditional AWS microservice which caveat,
+As you might expect, this is a traditional AWS microservice with one caveat,
 it interfaces with an SNS topic. This implies that
 the application is open to extension through that topic.
 
