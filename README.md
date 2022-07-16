@@ -457,9 +457,9 @@ companies. ALl of this would be relatively simple.
 # System Design
 
 The system architecture and design is exposed as the following two systems.
-The scope of this project as outlined in the red.
+The scope of this project is outlined in the red.
 
-[image-goes-here]
+![The Deepak System](./Deepak.png, "Data Mining Job Board System"")
 
 As you might expect, this is a traditional AWS microservice with one caveat,
 it interfaces with an SNS topic. This implies that
