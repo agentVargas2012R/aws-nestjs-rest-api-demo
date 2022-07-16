@@ -457,7 +457,6 @@ companies. ALl of this would be relatively simple.
 # System Design
 
 The system architecture and design is exposed as the following two systems.
-The scope of this project is outlined in the red.
 
 ![The Deepak Systen](https://github.com/agentVargas2012R/aws-nestjs-rest-api-demo/blob/master/Deepak.png?raw=true)
 As you might expect, this is a traditional AWS microservice with one caveat,
