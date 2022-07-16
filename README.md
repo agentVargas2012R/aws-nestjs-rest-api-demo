@@ -66,6 +66,41 @@ npm install
 
 ### Deploying to AWS
 
+Ensure you are a valid aws user/assumed role that has the 
+appropriate IAM permissions or you will run into problems deploying.
+
+### 1.) Deploying the infrastructure with AWS SAM
+1. Navigate to the scripts/infra directory.
+```aidl
+aws-nestjs-restapi-demo
+    | - lambda-handler
+    | - scripts
+            |- infra
+```
+
+2. Run the build script
+```aidl
+./build.sh
+```
+3. Deploy the infrastructure
+```aidl
+./deploy.sh
+```
+
+### 2.) Deploying the Lambda Layer
+1. Navigate to the scripts/ directory.
+```aidl
+aws-nestjs-restapi-demo
+    | - lambda-handler
+    | - scripts
+```
+
+2. Build the layer
+```aidl
+./layer.sh
+```
+
+### 3.) Deploying the Application
 1. Navigate the scripts directory
 
 2. Build the project
@@ -86,9 +121,10 @@ npm install
 
 Note - for this to work, you must have a user or assumed role configured with AWS API, Cognito, Lmbda, SNS, SQS and SES permissions.
 
-### Technologies
+## Tech Stack
 
 #### This implementation is composed of various AWS Services and Frameworks. Most notably are the following:
+* TypeScript
 * NestJS
 * AWS Lambda
 * AWS Layers
@@ -100,7 +136,19 @@ Note - for this to work, you must have a user or assumed role configured with AW
 * AWS Cognito
 * AWS SES
 
-###A high-level walk through of each element listed here is as follows...
+### A high-level walk through of each element listed here is as follows...
+
+### TypeScript
+
+This implementation uses TypeScript. TypeScript proves
+to be an amazing language that gives us some control
+over what can be some wild javascript unpredictability 
+with variables. For small systems, it may not be that big of a deal.
+
+However, the focus is to know what we are dealing with when looking
+at a thousand lines of code. We want to know that if we declare
+duck, it is really a duck and nothing something else that
+overwrote it only to find out that it's a giraffe.
 
 ### NestJS 
 
@@ -174,7 +222,7 @@ This service is used to serve email templates to the subscribed users.
 # Architecture
 
 The goal of this implementation is to create a clean, maintainable and robust application 
-that can scale infintely while minimal downtime and be HA compliant. 
+that can scale infintely while having minimal downtime and be HA compliant. 
 
 ## Serverless
 
@@ -183,7 +231,7 @@ With Minimal Administration, the was the intention of using serverless architect
 Lambda, DynamoDB, SNS and SQS. Each of these are managed by AWS and can
 scale with little to no management. 
 
-### Single-Table NoSQL Access Approach
+### Single-Table NoSQL Data Access Approach
 The single table pattern makes use of utillizing the Primary Key in combination 
 with the sorting key. In this implementation, we utilize a job name with an epoch timestamp.
 This allows us to make use of querying data by name and dates. Utilizing composite keys, 
@@ -274,7 +322,7 @@ to increase over all build time, I wanted to separate out the infrastructure
 from the application code. If you think about it, we don't really need to change
 a user dynamoDB table that often when compared to an API Gateway or Lambda function.
 The same holds true of SNS or SQS. Once these integrations are completed, generally speaking,
-they don't really change much. That's is where the infa stak comes into play.
+they don't really change much. That's where the infa stak comes into play.
 
 ### infra.yaml
 
@@ -291,7 +339,7 @@ Out of all the resources I just mentioned, the two that probably will change the
 opinion is going to be the Cognito. Sure, cognito itself may change, or the integration IDP
 may change or something along that nature but from an integration standpoint, not much.
 
-That is why these two are in there own template. They like AWS Glacier. 
+That is why these two are in there own template. They are like AWS Glacier. 
 
 ### layer.yaml
 
@@ -312,6 +360,7 @@ for the lambda function to carry out its execution.
 
 ### Convention Over Configuration
 
+#### Stack Naming Convention
 The naming pattern for the stacks following the scheme:
 
 ````aidl
@@ -332,10 +381,86 @@ A lambda function will have the following stack-name:
 acme-financeApp-dev-lambda
 ```
 
-The naming convention is chosen to clearly convey what the intention of his lambda function is.
+The naming convention is chosen to clearly convey what the intention of this lambda function is.
 It also convey's where it belongs, what environment it uses and what type of aws service it represents.
 
+### Application Organization
+
+If you are familiar with NestJS, this is one of the general concerns
+it addresses as an opionated framework. I agree with most
+of these opinions given my general background as a java developer.
+
+In short, this is a pod-style layout. Each entity or component
+of the system contains controllers, services, models and
+test cases. 
+
+For my example, this can be found here:
+
+```aidl
+lambda-hanlder
+        |- src
+            |- jobs
+                - jobs.controller.ts
+                - jobs.module.ts
+                - jobs.ts
+                - jobs.service
+```
+By naming convention of each extension, it's clear 
+that each file is responsible for the overall behavior 
+while decoupling each from each other. 
+
+In addition, general utilities that are used across
+components have been abstracted to a common directory
+For this application, since we are utilizing the aws 
+ecosystem with AWSK SDK V3, this folder is dedicated
+to common functions and wrappers needed across the app.
+
+These are developed utilizing abstraction and providing
+an additional layer to avoid the intricacies of using
+the sdk client libraries. Also, it handles and deals
+with the pk and sk formation. 
+
+```aidl
+lambda-hanlder
+        |- src
+            |- common
+                - app-util.ts
+                - db-util.ts
+                - sns-util.ts
+                - sqs-util.ts
+```
+
+# Business Function
+
+This is a job board powered by AWS. This application overall
+is to track job postings. In addition, the system
+notifies when new jobs become available. It interfaces
+with external sites and api's to data-mine the boards to discover what
+jobs are available. 
+
+This is open to extension. It is very much a real system. 
+You could easily create a workflow where we process data, 
+capture metrics based on our data and interface with third-party
+companies. ALl of this would be relatively simple.
 
 # System Design
+
+The system architecture and design is exposed as the following two systems.
+The scope of this project is outlined in the red.
+
+[image-goes-here]
+
+As you might expect, this is a traditional AWS microservice which caveat,
+it interfaces with an SNS topic. This implies that
+the application is open to extension through that topic.
+
+If we wanted to extend the systems to others internal/external,
+other systems would subscribe to this topic and receive
+incoming events. This allows us to follow the fire-and-forget
+design pattern. 
+
+Doing so decouples the microservices from one another. 
+Also, we can have multiple consumers receive the same event
+without changing code. They would simply subscribe to our topic.
 
 
