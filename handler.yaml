@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AN Event Handler that ingests data.
+
+Parameters:
+  deployEnv:
+    Type: String
+    Default: "dev"
+  infraStack:
+    Type: String
+    Default: "intllpnt-iapps-dev-infra"
+  site:
+    Type: String
+
+
+Resources:
+  EventHandlerFunc:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-lambda"
+      CodeUri: event-handler/dist/
+      Handler: index.handler
+      Runtime: nodejs14.x
+      AutoPublishAlias: live
+      Timeout: 10
+      MemorySize: 256
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt EventHandlerFuncRole.Arn
+      Environment:
+        Variables:
+          deployEnv: !Ref deployEnv
+          tableName: !Sub "${infraStack}-table"
+          site: !Ref site
+      Events:
+        CronEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 12 19,20,21,22,23 7 ? 2022)
+            Name: CronSchedule
+            Description: Run Monday - Friday this week only.
+
+  EventHandlerFuncRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DBAccessPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:GetItem'
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:DeleteItem'
+                  - 'dynamodb:Scan'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:BatchGetItem'
+                  - 'dynamodb:BatchWriteItem'
+                Resource:
+                  - !Sub
+                    - ${tableName}
+                    - { tableName: { Fn::ImportValue: !Join [ "-", [ !Ref infraStack , "table" ] ] } }
+
+Outputs:
+  EventHandlerFuncArn:
+    Description: The arn reference to the lambda function.
+    Value: !Ref EventHandlerFunc
+    Export:
+      Name: !Sub "${AWS::StackName}-lambda"

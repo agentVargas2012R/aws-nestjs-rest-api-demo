@@ -1,13 +1,6 @@
-# dark arts stuff
-/scripts/local-setup/event-handler.sh
-/scripts/event-handler-deploy.sh
-
 # compiled output
 /dist
 /node_modules
-/.aws-sam
-
-/scripts/.aws-sam
 
 # Logs
 logs

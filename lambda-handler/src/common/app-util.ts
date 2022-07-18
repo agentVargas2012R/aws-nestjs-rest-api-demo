@@ -9,7 +9,7 @@ export class AppUtil {
     }
     @LogInvocation
     public static async getSK(job: Job) {
-        return await job.postedDate + "#" + job.company.toLowerCase();
+        return await job.postedDate + "#" + await AppUtil.getPK(job.state) + "#" + await AppUtil.getPK(job.company);
     }
     public static buildApiResponse(message: string){
         console.log("testing iterative");

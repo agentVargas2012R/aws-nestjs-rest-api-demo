@@ -12,7 +12,6 @@ import {LogInvocation} from '../common/log-decorator';
 @Injectable()
 export class JobsService {
 
-    private jobs: Job[] = JOBS;
     private dbUtil: DBUtil;
     private sqsUtil: SQSUtil;
     private snsUtil: SNSUtil;
@@ -41,6 +40,7 @@ export class JobsService {
                 company: job.company.S,
                 fullTime: job.fullTime.S === "true",
                 geoLocation: job.geoLocation.S,
+                state: job.state.S,
                 payRange: job.payRange.S,
                 postedDate: job.postedDate.S
             }
@@ -56,6 +56,7 @@ export class JobsService {
                     description: job.description.S,
                     company: job.company.S,
                     geoLocation: job.geoLocation.S,
+                    state: job.state.S,
                     fullTime: job.fullTime.S === "true",
                     payRange: job.payRange.S,
                     postedDate: job.postedDate.S

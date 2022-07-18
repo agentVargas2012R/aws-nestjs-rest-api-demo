@@ -7,13 +7,14 @@ export class DBUtil {
 
     dynamoDB: DynamoDBClient;
     constructor(dynamoDB: DynamoDBClient) {
-        this.dynamoDB = new DynamoDBClient(dynamoDB);
+        this.dynamoDB = dynamoDB;
     }
 
     public async scan() {
-         const params: ScanCommandInput = {
+        const params: ScanCommandInput = {
             TableName: process.env.tableName
         }
+        console.log(params);
         const command = new ScanCommand(params);
         const result = await this.dynamoDB.send(command);
         return result?.Items;
