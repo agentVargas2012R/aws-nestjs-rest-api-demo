@@ -1,6 +1,6 @@
 cd ../lambda*
 export local=true;
-export tableName=intllpnt-iapps-dev-infra-table;
+export tableName=intllpnt-iapps-local-infra-table;
 export endpoint=http://localhost:8000;
 export account=`aws sts get-caller-identity --query Account`
 export accountId=`sed -e 's/^"//' -e 's/"$//' <<< "$account"`

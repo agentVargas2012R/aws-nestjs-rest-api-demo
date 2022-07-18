@@ -28,6 +28,12 @@ export class Job {
         geoLocation: string;
 
         @ApiProperty({
+          description: "The state abbreviation.",
+          example: "HI"
+        })
+        state: string;
+
+        @ApiProperty({
           description: "Indicates if the job is full-time or part-time."
         })
         fullTime: boolean;
