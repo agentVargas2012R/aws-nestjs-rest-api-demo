@@ -484,13 +484,48 @@ to fulfill the request and returns the data to the caller after transoforming
 the data from dynamoDB format. The application uses the content type json as its
 method of exchange.
 
-### Event Handler
+### The Event Handler
 
 This is the back-end system. It isn't accessible from the internet.
 Its responsibility is to load real-world data from external sites into the dynamodb table
 and capture the information available. This information is transformed
 and stored in a format that is presentable from the rest api.
 
+Note - I have deliberately left out some scripts here to protect the innocent.
+In reality, we'd integrate with an api as an api-partner. That said, I did not
+have the time to do this and instead have written a data ingestion process which 
+screen scrapes. The trade-off here is surmountable! If you are given a choice,
+choose to integrate with an API as it returns clean, sanitized data.
+
+### A Screen Scraper
+When scrapping, you must deal with fuzzy data and this adds an additional layer of 
+complexity to your ingestion process which results in uneccessary scrubbing. 
+Due to this, the data that becomes available to the API, may contain invalid records.
+
+To avoid this, I have marked records that are not usable with NA which stands for
+Not Available. If this where to run longer than a week, I would have implemented a process
+to remove the records using the PK+SK combination with records annotated for removal 
+based on there naming conventions. This means I could remove all invalid records with a single
+query.
+
+### Lambda On Schedule
+A lambda function runs on a cron schedule, which wakes the lambda up to execute.
+The lambda then makes an HTTP call to external sites for the states of FL, CA, NY and TX
+to gather IT jobs. It then, transforms these into dynamoDB records and inserts them using
+BatchWriteItem request, again using AWS SDK V3. The posted date is calculated based on the fuzzy description.
+When logic is unable to be inferred based on user text, the object is defaulted to NA for a given field.
+If the fields marked NA are related to the Primary Key or Sorting Key, the record is marked
+NA. NA in this system implies that record is not useable and would be scheduled for deletion.
+
+Records older than 30 days are ignored and are no longer ingested in the process. 
+Records younger than 30 days are updated on daily intervals. If changes occur from the external site,
+they would not be reflected within 24 hours. This is due to cost constraints, aka, my budget.
+
+Once the lambda function completes execution, it shuts down for a 24 hour period. 
+
+#### Note - I scheduled it for one week. 
+
+This is because the application is for demo purposes and not mean to be an actual product.
 
 #### Rant
 If we wanted to create a data-lake, we would opt to store the raw data,
